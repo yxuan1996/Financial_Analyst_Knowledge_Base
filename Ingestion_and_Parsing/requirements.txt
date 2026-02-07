@@ -1,0 +1,12 @@
+python-dotenv
+requests
+tqdm
+supabase
+pymupdf
+pymupdf4llm
+openai
+tiktoken
+pyyaml
+neo4j
+pinecone
+sentry-sdk
