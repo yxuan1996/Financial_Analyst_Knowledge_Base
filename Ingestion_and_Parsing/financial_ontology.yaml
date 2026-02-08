@@ -1,0 +1,116 @@
+ontology:
+  name: FinancialDocumentOntology
+  version: 1.0
+  standards:
+    accounting: US_GAAP
+    taxonomy: XBRL_US_GAAP
+
+entities:
+
+  Company:
+    description: Publicly listed company
+    properties:
+      ticker: string
+      name: string
+      cik: string
+
+  FiscalYear:
+    description: Reporting fiscal year
+    properties:
+      year: integer
+
+  Document:
+    description: Financial or regulatory document
+    properties:
+      document_id: string
+      title: string
+      filing_date: date
+    relationships:
+      BELONGS_TO:
+        - Company
+        - FiscalYear
+      IS_TYPE:
+        - DocumentType
+      MENTIONS:
+        - Metric
+        - KeyDevelopment
+        - KeyPerson
+
+  DocumentType:
+    description: Type of financial document
+    enum:
+      - FORM_10K
+      - FORM_10Q
+      - FORM_8K
+      - ANNUAL_REPORT
+      - EARNINGS_CALL_TRANSCRIPT
+
+  Metric:
+    description: Canonical financial metric (US GAAP via XBRL)
+    properties:
+      canonical_name: string
+      xbrl_tag: string
+      data_type: enum
+      period_type: enum
+      balance_type: enum
+    enums:
+      canonical_name:
+        - Revenue
+        - EarningsPerShareBasic
+        - EarningsPerShareDiluted
+    constraints:
+      disallow_custom_metrics: true
+
+  MetricDefinitions:
+    Revenue:
+      xbrl_tag: us-gaap:Revenues
+      data_type: monetary
+      period_type: duration
+      balance_type: credit
+      allowed_synonyms:
+        - net sales
+        - total revenue
+        - sales
+    EarningsPerShareBasic:
+      xbrl_tag: us-gaap:EarningsPerShareBasic
+      data_type: per_share
+      period_type: duration
+      balance_type: debit
+      allowed_synonyms:
+        - EPS
+        - basic eps
+    EarningsPerShareDiluted:
+      xbrl_tag: us-gaap:EarningsPerShareDiluted
+      data_type: per_share
+      period_type: duration
+      balance_type: debit
+      allowed_synonyms:
+        - diluted eps
+
+  KeyPerson:
+    description: Executive or board member mentioned in documents
+    properties:
+      name: string
+      role: enum
+    enums:
+      role:
+        - CEO
+        - CFO
+        - COO
+        - Chairperson
+        - BoardMember
+
+  KeyDevelopment:
+    description: Material business or financial development
+    properties:
+      title: string
+      description: string
+      category: enum
+    enums:
+      category:
+        - M&A
+        - Restructuring
+        - Litigation
+        - ProductLaunch
+        - RegulatoryAction
+        - GuidanceChange
