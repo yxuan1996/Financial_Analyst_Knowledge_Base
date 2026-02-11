@@ -1,2 +1,4 @@
 .env
-data
+data/pdf
+data/pdf_processed
+data/raw

@@ -1,0 +1,67 @@
+// ---------------------------
+// NODES (1 node per statement)
+// ---------------------------
+
+// Company
+MERGE (c:Company {ticker: '{TICKER}', name: '{COMPANY_NAME}', cik: '{CIK}'} );
+
+// FiscalYear
+MERGE (fy:FiscalYear {year: {FISCAL_YEAR}} );
+
+// Document
+MERGE (d:Document {document_id: '{DOCUMENT_ID}', title: '{DOCUMENT_TITLE}', filing_date: date('{FILING_DATE_YYYY_MM_DD}')} );
+
+// DocumentType (enum nodes, choose one depending on document type)
+MERGE (dt:DocumentType {name: 'FORM_10K'} );
+MERGE (dt:DocumentType {name: 'FORM_10Q'} );
+MERGE (dt:DocumentType {name: 'FORM_8K'} );
+MERGE (dt:DocumentType {name: 'ANNUAL_REPORT'} );
+MERGE (dt:DocumentType {name: 'EARNINGS_CALL_TRANSCRIPT'} );
+
+// Metric (ONLY the allowed canonical metrics per your ontology)
+MERGE (m:Metric {canonical_name: 'Revenue', xbrl_tag: 'us-gaap:Revenues', data_type: 'monetary', period_type: 'duration', balance_type: 'credit'} );
+MERGE (m:Metric {canonical_name: 'EarningsPerShareBasic', xbrl_tag: 'us-gaap:EarningsPerShareBasic', data_type: 'per_share', period_type: 'duration', balance_type: 'debit'} );
+MERGE (m:Metric {canonical_name: 'EarningsPerShareDiluted', xbrl_tag: 'us-gaap:EarningsPerShareDiluted', data_type: 'per_share', period_type: 'duration', balance_type: 'debit'} );
+
+// KeyPerson
+MERGE (kp:KeyPerson {name: '{PERSON_NAME}', role: '{ROLE}'} );
+
+// KeyDevelopment
+MERGE (kd:KeyDevelopment {title: '{TITLE}', description: '{DESCRIPTION}', category: '{DEV_CATEGORY_ENUM}'} );
+
+
+// ----------------------------------
+// RELATIONSHIPS (1 rel per statement)
+// ----------------------------------
+// Note: These statements are independently executable, but if the endpoint nodes
+// do not already exist, MERGE may create them (which can violate your “1 node per statement” rule). [web:186]
+
+// Document BELONGS_TO Company
+MERGE (d:Document {document_id: '{DOCUMENT_ID}'})
+MERGE (c:Company {ticker: '{TICKER}'})
+MERGE (d)-[:BELONGS_TO]->(c);
+
+// Document BELONGS_TO FiscalYear
+MERGE (d:Document {document_id: '{DOCUMENT_ID}'})
+MERGE (fy:FiscalYear {year: {FISCAL_YEAR}})
+MERGE (d)-[:BELONGS_TO]->(fy);
+
+// Document IS_TYPE DocumentType
+MERGE (d:Document {document_id: '{DOCUMENT_ID}'})
+MERGE (dt:DocumentType {name: '{DOCUMENT_TYPE_ENUM}'})
+MERGE (d)-[:IS_TYPE]->(dt);
+
+// Document MENTIONS Metric
+MERGE (d:Document {document_id: '{DOCUMENT_ID}'})
+MERGE (m:Metric {canonical_name: '{METRIC_CANONICAL_NAME_ENUM}'})
+MERGE (d)-[:MENTIONS]->(m);
+
+// Document MENTIONS KeyDevelopment
+MERGE (d:Document {document_id: '{DOCUMENT_ID}'})
+MERGE (kd:KeyDevelopment {title: '{TITLE}', description: '{DESCRIPTION}'})
+MERGE (d)-[:MENTIONS]->(kd);
+
+// Document MENTIONS KeyPerson
+MERGE (d:Document {document_id: '{DOCUMENT_ID}'})
+MERGE (kp:KeyPerson {name: '{PERSON_NAME}'})
+MERGE (d)-[:MENTIONS]->(kp);

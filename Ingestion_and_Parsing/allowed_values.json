@@ -1,0 +1,1 @@
+{ "allowed_metrics": [ "Revenue", "EarningsPerShareBasic", "EarningsPerShareDiluted" ], "allowed_person_roles": [ "CEO", "CFO", "COO", "CTO", "Chairman" ], "allowed_document_types": [ "FORM_10K", "FORM_10Q", "ANNUAL_REPORT"] }
